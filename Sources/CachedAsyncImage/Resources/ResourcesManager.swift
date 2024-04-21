@@ -14,14 +14,14 @@ import SwiftUI
 #endif
 
 /// Resources manager typealias.
-public typealias RM = ResourcesManager
+typealias RM = ResourcesManager
 
 /// Resources manager.
-public final class ResourcesManager {
+final class ResourcesManager {
     // MARK: - Public Properties
     
     /// An object that stores color data.
-    public static let snow = getColor(with: "snow")
+    static let snow = getColor(with: "snow")
     
     // MARK: - Public Methods
     
@@ -30,7 +30,7 @@ public final class ResourcesManager {
     /// - Parameter name: Image name.
     ///
     /// - Returns: An initialized image object or `nil` if the object was not found in the resources.
-    public static func image(_ name: String) -> UIImage? {
+    static func image(_ name: String) -> UIImage? {
         UIImage(named: name, in: Bundle.module, with: nil)
     }
     
@@ -52,14 +52,14 @@ public final class ResourcesManager {
 import AppKit
 
 /// Resources manager typealias.
-public typealias RM = ResourcesManager
+typealias RM = ResourcesManager
 
 /// Resources manager.
-public final class ResourcesManager {
+final class ResourcesManager {
     // MARK: - Public Properties
     
     /// An object that stores color data.
-    public static let snow = NSColor(
+    static let snow = NSColor(
         named: NSColor.Name("snow"),
         bundle: Bundle.module
     ) ?? NSColor()
@@ -71,7 +71,7 @@ public final class ResourcesManager {
     /// - Parameter name: Image name.
     ///
     /// - Returns: An initialized image object or `nil` if the object was not found in the resources.
-    public static func image(_ name: String) -> NSImage? {
+    static func image(_ name: String) -> NSImage? {
         Bundle.module.image(forResource: NSImage.Name(name))
     }
 }

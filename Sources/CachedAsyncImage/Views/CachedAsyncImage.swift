@@ -16,7 +16,8 @@ public struct CachedAsyncImage: View {
     
     // MARK: - Private Properties
     
-    private let url: String
+    private let url: String?
+    private let request: URLRequest?
     private let placeholder: ((String) -> any View)?
     private let image: (CPImage) -> any View
     private let error: ((String, @escaping () -> Void) -> any View)?
@@ -42,6 +43,32 @@ public struct CachedAsyncImage: View {
         )
         
         self.url = url
+        self.request = nil
+        self.placeholder = placeholder
+        self.image = image
+        self.error = error
+    }
+    
+    /// - Parameters:
+    ///   - request: A URL request object.
+    ///   - placeholder: Placeholder with progress to be displayed.
+    ///   - image: Image to be displayed.
+    ///   - error: Error with retry handler to be displayed.
+    public init(
+        request: URLRequest,
+        placeholder: ((String) -> any View)? = nil,
+        image: @escaping (CPImage) -> any View,
+        error: ((String, @escaping () -> Void) -> any View)? = nil
+    ) {
+        _imageLoader = StateObject(
+            wrappedValue: ImageLoader(
+                imageCache: ImageCache().wrappedValue,
+                networkManager: Network().wrappedValue
+            )
+        )
+        
+        self.url = nil
+        self.request = request
         self.placeholder = placeholder
         self.image = image
         self.error = error
@@ -55,7 +82,11 @@ public struct CachedAsyncImage: View {
             case .idle:
                 Color.clear
                     .onAppear {
-                        fetchImage(from: url)
+                        if let url = url {
+                            fetchImage(from: url)
+                        } else if let request = request {
+                            fetchImage(for: request)
+                        }
                     }
             case .loading(let progress):
                 if let placeholder = placeholder {
@@ -66,14 +97,28 @@ public struct CachedAsyncImage: View {
                 }
             case .failed(let errorMessage):
                 if let error = error {
-                    AnyView(error(errorMessage, { fetchImage(from: url) }))
+                    if let url = url {
+                        AnyView(
+                            error(errorMessage, { fetchImage(from: url) })
+                        )
+                    } else if let request = request {
+                        AnyView(
+                            error(errorMessage, { fetchImage(for: request) })
+                        )
+                    }
                 }
             case .loaded(let image):
                 AnyView(self.image(image))
             }
         }
-        .onChange(of: url) { newValue in
-            fetchImage(from: newValue)
+        .conditional { view in
+            if let url = url {
+                view
+                    .onChange(of: url) { fetchImage(from: $0) }
+            } else if let request = request {
+                view
+                    .onChange(of: request) { fetchImage(for: $0) }
+            }
         }
     }
     
@@ -81,6 +126,10 @@ public struct CachedAsyncImage: View {
     
     private func fetchImage(from url: String) {
         imageLoader.fetchImage(from: url)
+    }
+    
+    private func fetchImage(for request: URLRequest) {
+        imageLoader.fetchImage(for: request)
     }
 }
 

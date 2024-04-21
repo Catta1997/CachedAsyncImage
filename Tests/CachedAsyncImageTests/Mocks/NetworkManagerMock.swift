@@ -13,15 +13,28 @@ import Combine
 struct NetworkManagerMock: NetworkProtocol {
     // MARK: - Public Methods
     
-    func fetchImage(from url: URL?) -> (
-        progress: Progress?,
-        publisher: AnyPublisher<Data, Error>
-    ) {
-        guard url != nil else {
-            return (nil, Fail(error: NetworkError.badURL())
-                .eraseToAnyPublisher())
+    func fetchImage(from url: URL?) -> ProgressPublisherTuple {
+        guard let url = url else {
+            return (
+                nil,
+                Fail(error: NetworkError.badURL()).eraseToAnyPublisher()
+            )
         }
         
+        let request = URLRequest(url: url)
+        let (progress, result) = loadImage(for: request)
+        
+        return (progress, result)
+    }
+    
+    func fetchImage(for request: URLRequest) -> ProgressPublisherTuple {
+        let (progress, result) = loadImage(for: request)
+        return (progress, result)
+    }
+    
+    // MARK: - Private Methods
+    
+    private func loadImage(for request: URLRequest) -> ProgressPublisherTuple {
         let image = RM.image("backToTheFuture")
         
         guard let imageData = image?.data else {
