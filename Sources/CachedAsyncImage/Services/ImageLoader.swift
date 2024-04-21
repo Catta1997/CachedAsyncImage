@@ -59,6 +59,29 @@ final class ImageLoader: ObservableObject {
         
         let (progress, data) = networkManager.fetchImage(from: URL(string: url))
         
+        handleImage(progress: progress, data: data, url: URL(string: url))
+    }
+    
+    func fetchImage(for request: URLRequest) {
+        if case .loading = state { return }
+        
+        if let url = request.url, let cachedImage = imageCache[url] {
+            state = .loaded(cachedImage)
+            return
+        }
+        
+        let (progress, data) = networkManager.fetchImage(for: request)
+        
+        handleImage(progress: progress, data: data, url: request.url)
+    }
+    
+    // MARK: - Private Methods
+    
+    private func handleImage(
+        progress: Progress?,
+        data: AnyPublisher<Data, any Error>,
+        url: URL?
+    ) {
         progress?
             .publisher(for: \.fractionCompleted)
             .receive(on: DispatchQueue.main)
@@ -87,7 +110,7 @@ final class ImageLoader: ObservableObject {
                     }
                 },
                 receiveOutput: { [weak self] in
-                    self?.cache(url: URL(string: url), image: $0)
+                    self?.cache(url: url, image: $0)
                 }
             )
             .subscribe(on: Self.imageProcessing)
@@ -99,8 +122,6 @@ final class ImageLoader: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - Private Methods
-    
     private func cache(url: URL?, image: CPImage?) {
         guard let url = url else { return }
         image.map { imageCache[url] = $0 }
@@ -110,11 +131,11 @@ final class ImageLoader: ObservableObject {
         cancellables.forEach { $0.cancel() }
     }
     
-    private func log(_ error: String, url: String) {
+    private func log(_ error: String, url: URL?) {
         guard let emoji = Emoji.getEmoji(from: .hammer) else { return }
         
         let errorMessage = "Error: \(error)"
-        let urlMessage = "URL: \(url)"
+        let urlMessage = "URL: \(url?.absoluteString ?? "")"
         
         Log.failure.error(
             "\(emoji) CachedAsyncImage\n\(errorMessage)\n\(urlMessage)"

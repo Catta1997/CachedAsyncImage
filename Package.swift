@@ -18,10 +18,6 @@ let package = Package(
         .library(
             name: "CachedAsyncImage",
             targets: ["CachedAsyncImage"]
-        ),
-        .library(
-            name: "ExampleCachedAsyncImage",
-            targets: ["Examples"]
         )
     ],
     targets: [
@@ -29,11 +25,6 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "CachedAsyncImage"
-        ),
-        .target(
-            name: "Examples",
-            dependencies: ["CachedAsyncImage"],
-            path: "Examples"
         ),
         .testTarget(
             name: "CachedAsyncImageTests",

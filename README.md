@@ -124,13 +124,28 @@ init() {
 }
 ```
 
-### You can also read this value from within a view to access the image cache management
+### Get cached image, remove cached image or image cache if needed.
 
 ```swift
 struct MyView: View {
     @ImageCache private var imageCache
 
     // ...
+
+    // Get cached image.
+    private func getCachedImage(for url: URL) -> UIImage? {
+        imageCache[url]
+    }
+
+    // Remove cached image.
+    private func removeCachedImage(for url: URL) {
+        imageCache[url] = nil
+    }
+
+    // Remove image cache.
+    private func removeImageCache() {
+        imageCache.removeCache()
+    }
 }
 ```
 

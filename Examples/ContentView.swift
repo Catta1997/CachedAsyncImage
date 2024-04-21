@@ -9,7 +9,6 @@
 import SwiftUI
 import CachedAsyncImage
 
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, visionOS 1.0, *)
 struct ContentView: View {
     // MARK: - Private Properties
     
@@ -20,7 +19,7 @@ struct ContentView: View {
         "https://image.tmdb.org/t/p/original/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg"
     ]
     
-    private static let standartPadding: CGFloat = 20
+    private static let standartPadding: CGFloat = 16
     
     // MARK: - Initializers
     
@@ -36,14 +35,14 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            Color(RM.snow)
+            Color.white
                 .ignoresSafeArea()
             
             GeometryReader { geometry in
                 let size = geometry.size
                 
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack(spacing: 16) {
                         ForEach(posters, id: \.self) { url in
                             CachedAsyncImage(
                                 url: url,
@@ -97,9 +96,8 @@ struct ContentView: View {
 
 // MARK: - Ext. Configure views
 
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, visionOS 1.0, *)
 extension ContentView {
-    func placeholder(_ progress: String) -> some View {
+    private func placeholder(_ progress: String) -> some View {
         ZStack {
             Color.yellow
             
@@ -113,7 +111,10 @@ extension ContentView {
         }
     }
     
-    func error(_ error: String, action: (() -> Void)? = nil) -> some View {
+    private func error(
+        _ error: String,
+        action: (() -> Void)? = nil
+    ) -> some View {
         ZStack {
             Color.yellow
             
@@ -135,7 +136,7 @@ extension ContentView {
         }
     }
     
-    func retry(action: (() -> Void)?) -> some View {
+    private func retry(action: (() -> Void)?) -> some View {
         Button(
             action: { action?() },
             label: {
@@ -144,14 +145,5 @@ extension ContentView {
                     .opacity(0.8)
             }
         )
-    }
-}
-
-// MARK: - Preview Provider
-
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, visionOS 1.0, *)
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }
