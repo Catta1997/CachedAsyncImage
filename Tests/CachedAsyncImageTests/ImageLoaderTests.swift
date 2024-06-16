@@ -7,7 +7,6 @@
 //
 
 import XCTest
-import Combine
 @testable import CachedAsyncImage
 
 final class ImageLoaderTests: XCTestCase {
