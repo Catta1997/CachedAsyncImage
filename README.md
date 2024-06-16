@@ -5,9 +5,11 @@
 Async image loading with progress and cache for SwiftUI.
 
 ## Screenshots
+
 ![](./demo.png)
 
 ## Installation
+
 ### [Swift Package Manager](https://swift.org/package-manager/)
 
 Going to Xcode `File` > `Add Packages...` and add the repository by giving the URL  
@@ -130,7 +132,9 @@ init() {
 struct MyView: View {
     @ImageCache private var imageCache
 
-    // ...
+    var body: some View {
+        // ...
+    }
 
     // Get cached image.
     private func getCachedImage(for url: URL) -> UIImage? {
@@ -150,8 +154,11 @@ struct MyView: View {
 ```
 
 ## Requirements
+
 - iOS 14.0 + / macOS 11.0 + / tvOS 14.0 + / watchOS 7.0 + / visionOS 1.0 +
+- Xcode 15.0 +
 - [SwiftUI](https://developer.apple.com/xcode/swiftui/)
 
 ## License
+
 - CachedAsyncImage is distributed under the MIT License.
