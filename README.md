@@ -23,6 +23,7 @@ import CachedAsyncImage
 ```
 
 ### Quick start
+
 **Note:** `placeholder` is an optional parameter.
 
 ```swift
@@ -54,6 +55,7 @@ CachedAsyncImage(
 ```
 
 ### Use it to the fullest
+
 **Note:** `placeholder` and `error` is an optional parameters.
 
 ```swift
@@ -114,6 +116,7 @@ CachedAsyncImage(
 ```
 
 ### Set image cache limit if needed
+
 **Note:** The default value is `0`, e.g. is no count limit and is no total cost limit.
 
 ```swift
