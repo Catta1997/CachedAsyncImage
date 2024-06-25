@@ -92,13 +92,13 @@ final class ImageLoader: ObservableObject {
         
         data
             .map { CPImage(data: $0) }
-            .catch { [weak self] error -> AnyPublisher<CPImage?, Never> in
+            .catch { error -> AnyPublisher<CPImage?, Never> in
                 if let error = error as? NetworkError {
                     Task { @MainActor [weak self] in
-                        self?.state = .failed(error.rawValue)
+                        self?.state = .failed(error.message)
                     }
                     
-                    self?.log(error.rawValue, url: url)
+                    Log.log(error.message, url: url)
                 }
                 
                 return Just(nil).eraseToAnyPublisher()
@@ -129,16 +129,5 @@ final class ImageLoader: ObservableObject {
     
     private func cancel() {
         cancellables.forEach { $0.cancel() }
-    }
-    
-    private func log(_ error: String, url: URL?) {
-        guard let emoji = Emoji.getEmoji(from: .hammer) else { return }
-        
-        let errorMessage = "Error: \(error)"
-        let urlMessage = "URL: \(url?.absoluteString ?? "")"
-        
-        Log.failure.error(
-            "\(emoji) CachedAsyncImage\n\(errorMessage)\n\(urlMessage)"
-        )
     }
 }

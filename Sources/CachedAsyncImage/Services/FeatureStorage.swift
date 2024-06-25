@@ -11,8 +11,13 @@ import Foundation
 final class FeatureStorage {
     // MARK: - Public Properties
     
-    var imageCache: ImageCacheProtocol = TemporaryImageCache()
-    var network: NetworkProtocol = NetworkManager()
+    lazy var imageCache: ImageCacheProtocol = {
+        TemporaryImageCache()
+    }()
+    
+    lazy var network: NetworkProtocol = {
+        NetworkManager()
+    }()
     
     static let shared = FeatureStorage()
     

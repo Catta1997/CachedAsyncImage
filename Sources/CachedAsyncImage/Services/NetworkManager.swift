@@ -28,16 +28,27 @@ enum NetworkError: LocalizedError {
     case transportError(Error)
     
     // Received an bad response, e.g. non HTTP result.
-    case badResponse(String)
+    case badResponse(String, Int)
     
-    var rawValue: String {
+    var message: String {
         switch self {
         case .badURL(let message):
             return message
         case .transportError(let error):
             return error.localizedDescription
-        case .badResponse(let message):
+        case .badResponse(let message, _):
             return message
+        }
+    }
+    
+    var statusCode: Int? {
+        switch self {
+        case .badURL:
+            return nil
+        case .transportError:
+            return nil
+        case .badResponse(_, let statusCode):
+            return statusCode
         }
     }
 }
@@ -79,12 +90,15 @@ struct NetworkManager: NetworkProtocol {
             .mapError { NetworkError.transportError($0) }
             // Handle all other errors.
             .tryMap { element in
-                if let httpResponse = element.response as? HTTPURLResponse,
-                   !(200...299).contains(httpResponse.statusCode) {
-                    let message = "Bad response.\nStatus code:"
-                    let error = "\(message) \(httpResponse.statusCode)"
+                if let httpResponse = element.response as? HTTPURLResponse {
+                    let statusCode = httpResponse.statusCode
                     
-                    throw NetworkError.badResponse(error)
+                    if !(200...299).contains(statusCode) {
+                        let message = "Bad response.\nStatus code:"
+                        let error = "\(message) \(statusCode)"
+                        
+                        throw NetworkError.badResponse(error, statusCode)
+                    }
                 }
                 
                 return element.data
