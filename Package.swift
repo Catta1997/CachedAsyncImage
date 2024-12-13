@@ -6,6 +6,10 @@ import PackageDescription
 
 let package = Package(
     name: "CachedAsyncImage",
+    platforms: [
+        // Add support for all platforms starting from a specific version.
+        .macOS(.v11)
+    ],
     products: [
         .library(name: "CachedAsyncImage", targets: ["CachedAsyncImage"])
     ],
